@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>YRBot — Telegram-боты на заказ</title>
+<style>
+:root{--bg:#050608;--card:#0b0e14;--line:#171d2a;--b1:#6f9bf2;--b2:#a9c6ff;--tx:#e9eefb;--mut:#8a94a8;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-behavior:smooth;scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--tx);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(520px circle at var(--mx,50%) var(--my,15%),rgba(111,155,242,.16),transparent 60%)}
+canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
+nav,main,footer{position:relative}
+.w{max-width:1040px;margin:auto;padding:0 20px}
+nav{display:flex;justify-content:space-between;align-items:center;padding:18px 20px;max-width:1040px;margin:auto}
+.logo{font-weight:800;font-size:21px;letter-spacing:-.02em}.logo b{color:var(--b2)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 26px;border-radius:999px;background:linear-gradient(135deg,var(--b1),var(--b2));color:#04070d;font:700 16px system-ui,sans-serif;text-decoration:none;border:0;cursor:pointer;animation:pulse 2.4s infinite;transition:transform .15s}
+.btn.sm{padding:9px 18px;font-size:14px;animation:none}
+.btn.ghost{background:transparent;color:var(--b2);border:1px solid var(--line);animation:none}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(111,155,242,.5)}70%,100%{box-shadow:0 0 0 18px rgba(111,155,242,0)}}
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;padding:48px 0 30px}
+@media(max-width:820px){.hero{grid-template-columns:1fr}}
+.tag{display:inline-block;padding:6px 14px;border:1px solid var(--line);border-radius:999px;color:var(--b2);font-size:13px;margin-bottom:18px;background:var(--card)}
+h1{font-size:clamp(34px,6vw,60px);line-height:1.05;letter-spacing:-.03em}
+h2{font-size:clamp(26px,4vw,38px);letter-spacing:-.02em;margin-bottom:10px}
+.g{background:linear-gradient(90deg,var(--b1),var(--b2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{color:var(--mut);margin:18px 0 28px;max-width:480px}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.note{color:var(--mut);font-size:13px;margin-top:14px}
+.phone{background:var(--card);border:1px solid var(--line);border-radius:28px;padding:14px;max-width:360px;margin:auto;width:100%;box-shadow:0 30px 90px rgba(111,155,242,.13)}
+.ph{display:flex;gap:10px;align-items:center;padding:4px 6px 12px;border-bottom:1px solid var(--line);font-weight:600}
+.av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--b1),var(--b2));display:grid;place-items:center;color:#04070d;font-weight:800;font-size:13px}
+.chat{height:300px;display:flex;flex-direction:column;justify-content:flex-end;gap:8px;padding:12px 2px;overflow:hidden}
+.m{max-width:82%;padding:9px 13px;border-radius:16px;font-size:14px;animation:pop .25s}
+.bot{background:#121826;align-self:flex-start;border-bottom-left-radius:4px}
+.me{background:linear-gradient(135deg,var(--b1),var(--b2));color:#04070d;align-self:flex-end;border-bottom-right-radius:4px}
+.dots span{display:inline-block;width:6px;height:6px;margin:0 2px;border-radius:50%;background:var(--mut);animation:bl 1s infinite}
+.dots span:nth-child(2){animation-delay:.15s}.dots span:nth-child(3){animation-delay:.3s}
+@keyframes bl{50%{opacity:.25}}@keyframes pop{from{opacity:0;transform:translateY(8px) scale(.97)}}
+section{padding:60px 0}
+.sub{color:var(--mut);margin-bottom:28px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px;transition:transform .2s,border-color .2s}
+.card:hover{transform:translateY(-4px);border-color:var(--b1)}
+.card i{font-style:normal;display:inline-grid;place-items:center;width:38px;height:38px;border-radius:12px;background:rgba(111,155,242,.15);color:var(--b2);font-weight:800;margin-bottom:12px}
+.card p{color:var(--mut);font-size:15px}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:22px}
+.chip{padding:10px 16px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--tx);cursor:pointer;font:15px system-ui,sans-serif;transition:.2s}
+.chip.on{background:rgba(111,155,242,.18);border-color:var(--b1);color:var(--b2)}
+.build{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:26px}
+#res{margin-bottom:18px;color:var(--b2);font-weight:600}
+.end{text-align:center;padding:70px 20px;border:1px solid var(--line);border-radius:28px;background:radial-gradient(500px circle at 50% 0,rgba(111,155,242,.18),transparent 70%),var(--card)}
+footer{padding:40px 20px 90px;text-align:center;color:var(--mut);font-size:14px}
+footer a{color:var(--b2)}
+.rv{opacity:0;transform:translateY(24px);transition:.6s}.rv.in{opacity:1;transform:none}
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:5;display:flex;justify-content:center;align-items:center;gap:16px;padding:12px 20px calc(12px + env(safe-area-inset-bottom,0px));background:rgba(5,6,8,.88);backdrop-filter:blur(12px);border-top:1px solid var(--line);transform:translateY(110%);transition:.35s}
+.bar.show{transform:none}
+.modal{position:fixed;inset:0;z-index:9;display:none;place-items:center;background:rgba(0,0,0,.72);padding:20px}
+.modal.show{display:grid}
+.box{background:var(--card);border:1px solid var(--b1);border-radius:24px;padding:30px;max-width:400px;text-align:center;animation:pop .3s}
+.box p{color:var(--mut);margin:10px 0 20px}
+.x{display:block;margin:14px auto 0;background:none;border:0;color:var(--mut);cursor:pointer;font-size:13px}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<canvas id="cv"></canvas>
+<nav><div class="logo">YR<b>Bot</b></div><a class="btn sm" data-go="nav">В бота →</a></nav>
+<main class="w">
+<div class="hero">
+  <div>
+    <span class="tag">Telegram-боты на заказ</span>
+    <h1>Ваш бот в Telegram — <span class="g">без шаблонов</span> и лишнего</h1>
+    <p class="lead">Расскажите, что нужно, прямо в чате с ботом: он соберёт заявку, и мы вернёмся с решением. Без регистраций на сайте и длинных анкет.</p>
+    <div class="row"><a class="btn" data-go="hero">Открыть бота в Telegram →</a><a class="btn ghost" href="#build">Собрать своего бота</a></div>
+    <p class="note">Заявка занимает пару минут. Оплата: банковский перевод или криптовалюта.</p>
+  </div>
+  <div class="phone rv">
+    <div class="ph"><div class="av">YR</div><div>YRBot<div style="font-size:12px;color:var(--mut);font-weight:400">бот</div></div></div>
+    <div class="chat" id="chat"></div>
+    <a class="btn sm" data-go="phone" style="width:100%;justify-content:center">Начать так же →</a>
+  </div>
+</div>
+
+<section id="build" class="rv">
+  <h2>Соберите бота за 10 секунд</h2>
+  <p class="sub">Отметьте, что нужно: мы передадим выбор боту, и не придётся объяснять с нуля.</p>
+  <div class="build">
+    <div class="chips" id="chips"></div>
+    <div id="res">Выберите хотя бы одну функцию</div>
+    <a class="btn" id="bgo" data-go="build">Отправить в бота →</a>
+  </div>
+</section>
+
+<section class="rv">
+  <h2>Как это работает</h2>
+  <p class="sub">Четыре шага, и все в одном чате.</p>
+  <div class="grid">
+    <div class="card"><i>1</i><h3>Нажмите Start</h3><p>Выберите язык и представьтесь.</p></div>
+    <div class="card"><i>2</i><h3>Опишите задачу</h3><p>Функции, дизайн, сроки, файлы и примеры.</p></div>
+    <div class="card"><i>3</i><h3>Покажем демо</h3><p>Вы пробуете бота до финальной оплаты.</p></div>
+    <div class="card"><i>4</i><h3>Получите бота</h3><p>Передаём бота, доступы и инструкцию.</p></div>
+  </div>
+</section>
+
+<section class="rv">
+  <h2>Почему YRBot</h2>
+  <p class="sub">Качество, удобство и современный минимализм.</p>
+  <div class="grid">
+    <div class="card"><i>◆</i><h3>Без шаблонов</h3><p>Бот под вашу задачу, а не типовая заготовка.</p></div>
+    <div class="card"><i>◇</i><h3>Чистый дизайн</h3><p>Ничего лишнего: клиенту понятно с первого нажатия.</p></div>
+    <div class="card"><i>★</i><h3>Всё в Telegram</h3><p>Заявка, общение и статусы заказа в одном месте.</p></div>
+  </div>
+</section>
+
+<section class="rv"><div class="end">
+  <h2>Хватит читать, <span class="g">начните диалог</span></h2>
+  <p class="sub">Бот ответит сразу. Первый шаг занимает несколько секунд.</p>
+  <a class="btn" data-go="end">Открыть бота в Telegram →</a>
+  <p class="note">Пригласите друга по реферальной ссылке из бота.</p>
+</div></section>
+</main>
+<footer>Контакты: <a href="https://t.me/mq3st" target="_blank" rel="noopener">@mq3st</a> · <a href="mailto:mq3stmg@gmail.com">mq3stmg@gmail.com</a><br><a href="https://mq3st.github.io/yrbot-privacy-/index.html" target="_blank" rel="noopener">Политика конфиденциальности</a> · © YRBot</footer>
+
+<div class="bar" id="bar"><span>Бот уже ждёт вашу заявку</span><a class="btn sm" data-go="bar">Открыть →</a></div>
+<div class="modal" id="modal"><div class="box"><h2>Не уходите 👀</h2><p>Загляните в бота: за 2 минуты у вас будет готовая заявка, и мы займёмся остальным.</p><a class="btn" data-go="exit">Перейти в бота →</a><button class="x" id="close">Нет, спасибо</button></div></div>
+
+<script>
+const BOT="yrbotabot"; // username бота (без @)
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const go=(el,p)=>{el.href=`https://t.me/${BOT}?start=site_${p}`;el.target="_blank";el.rel="noopener"};
+$$("[data-go]").forEach(a=>go(a,a.dataset.go));
+addEventListener("pointermove",e=>{document.body.style.setProperty("--mx",e.clientX+"px");document.body.style.setProperty("--my",e.clientY+"px")});
+$$(".btn:not(.sm)").forEach(b=>{b.addEventListener("pointermove",e=>{const r=b.getBoundingClientRect();b.style.transform=`translate(${(e.clientX-r.left-r.width/2)/8}px,${(e.clientY-r.top-r.height/2)/6}px)`});b.addEventListener("pointerleave",()=>b.style.transform="")});
+const io=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting&&e.target.classList.add("in")),{threshold:.12});$$(".rv").forEach(x=>io.observe(x));
+
+// демо-диалог
+const msgs=[["bot","Привет! Как к вам обращаться?"],["me","Алексей"],["bot","Что должен уметь ваш бот?"],["me","Меню, оплата и админ-панель"],["bot","Принято ✅ Заявка №1 отправлена"]];
+const chat=$("#chat"),wait=ms=>new Promise(r=>setTimeout(r,ms));
+async function demo(){for(;;){chat.innerHTML="";for(const [w,t] of msgs){let d;if(w==="bot"){d=document.createElement("div");d.className="m bot dots";d.innerHTML="<span></span><span></span><span></span>";chat.append(d);await wait(900)}else await wait(700);const m=d||document.createElement("div");m.className="m "+w;m.textContent=t;chat.append(m);await wait(500)}await wait(3500)}}
+demo();
+
+// конструктор
+const feats=["Меню и кнопки","Приём оплаты","Админ-панель","Рассылки","База клиентов","Два языка","Рефералка","Интеграции"],sel=new Set(),box=$("#chips");
+feats.forEach((f,i)=>{const b=document.createElement("button");b.className="chip";b.textContent=f;b.onclick=()=>{sel.has(i)?sel.delete(i):sel.add(i);b.classList.toggle("on");const n=sel.size;$("#res").textContent=n?`Выбрано функций: ${n}. Осталось отправить заявку боту →`:"Выберите хотя бы одну функцию";go($("#bgo"),"b"+[...sel].sort().join("-"))};box.append(b)});
+
+// липкая панель и перехват ухода
+addEventListener("scroll",()=>$("#bar").classList.toggle("show",scrollY>600),{passive:true});
+let shown=false;const pop=()=>{try{if(shown||sessionStorage.getItem("yr"))return;sessionStorage.setItem("yr","1")}catch(e){if(shown)return}shown=true;$("#modal").classList.add("show")};
+document.addEventListener("mouseleave",e=>{if(e.clientY<=0)pop()});setTimeout(pop,45000);
+$("#close").onclick=()=>$("#modal").classList.remove("show");
+
+// частицы
+if(!matchMedia("(prefers-reduced-motion:reduce)").matches){const c=$("#cv"),x=c.getContext("2d");let W,H,P=[];const rs=()=>{W=c.width=innerWidth;H=c.height=innerHeight;P=Array.from({length:Math.min(55,W/22|0)},()=>({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3}))};rs();addEventListener("resize",rs);
+(function f(){x.clearRect(0,0,W,H);P.forEach((p,i)=>{p.x=(p.x+p.vx+W)%W;p.y=(p.y+p.vy+H)%H;x.fillStyle="rgba(169,198,255,.5)";x.fillRect(p.x,p.y,2,2);for(let j=i+1;j<P.length;j++){const d=Math.hypot(p.x-P[j].x,p.y-P[j].y);if(d<110){x.strokeStyle=`rgba(111,155,242,${.16*(1-d/110)})`;x.beginPath();x.moveTo(p.x,p.y);x.lineTo(P[j].x,P[j].y);x.stroke()}}});requestAnimationFrame(f)})()}
+</script>
+</body>
+</html>
